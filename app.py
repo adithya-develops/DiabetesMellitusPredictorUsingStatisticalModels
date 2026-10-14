@@ -277,6 +277,36 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 .stRadio label, .stCheckbox label { color:#aab4b8 !important; }
 [data-testid="stSlider"] [data-baseweb="slider"] div[role="slider"] { background:var(--lime) !important; border-color:var(--lime) !important; }
 
+/* Number-input stepper controls: dark glyphs stay legible on the lime hover */
+[data-testid="stNumberInput"] button,
+[data-testid="stNumberInput"] button[aria-label="Increment"],
+[data-testid="stNumberInput"] button[aria-label="Decrement"] {
+  color: #8e9ba2 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transition: color .16s ease, background .16s ease, border-color .16s ease !important;
+}
+[data-testid="stNumberInput"] button:hover,
+[data-testid="stNumberInput"] button:focus-visible,
+[data-testid="stNumberInput"] button:active,
+[data-testid="stNumberInput"] button[aria-label="Increment"]:hover,
+[data-testid="stNumberInput"] button[aria-label="Decrement"]:hover {
+  color: #090c08 !important;
+  background: var(--lime) !important;
+  border-color: var(--lime) !important;
+  box-shadow: 0 0 0 2px rgba(216,245,108,.10) !important;
+}
+[data-testid="stNumberInput"] button:hover svg,
+[data-testid="stNumberInput"] button:focus-visible svg,
+[data-testid="stNumberInput"] button:active svg,
+[data-testid="stNumberInput"] button:hover svg path,
+[data-testid="stNumberInput"] button:focus-visible svg path,
+[data-testid="stNumberInput"] button:active svg path {
+  color: #090c08 !important;
+  stroke: #090c08 !important;
+}
+
 /* Tables, expanders, charts */
 [data-testid="stDataFrame"], [data-testid="stTable"] { border:1px solid #2a343b; border-radius:11px; overflow:hidden; }
 [data-testid="stDataFrame"] [role="grid"] { background:#13191e; }
@@ -648,9 +678,27 @@ elif page == "ANOVA":
 
         st.markdown("<div style='height:17px'></div>", unsafe_allow_html=True)
         m1, m2, m3, m4 = st.columns(4, gap="medium")
+        # η² is often very small in large datasets. Fixed three-decimal formatting
+        # made legitimate non-zero effects appear as 0.000, so adapt precision.
+        if not np.isfinite(eta):
+            eta_display = "—"
+            eta_description = "Not available for this test"
+        elif eta >= 0.01:
+            eta_display = f"{eta:.3f}"
+            eta_description = f"{eta * 100:.3g}% of variance explained"
+        elif eta >= 0.0001:
+            eta_display = f"{eta:.4f}"
+            eta_description = f"{eta * 100:.3g}% of variance explained"
+        elif eta > 0:
+            eta_display = f"{eta:.2e}"
+            eta_description = f"{eta * 100:.2g}% of variance explained"
+        else:
+            eta_display = "0.0000"
+            eta_description = "0% of variance explained"
+
         with m1: card_metric("F statistic", f"{fstat:.3f}", f"df {dfb} / {dfw}", "lime")
         with m2: card_metric("p-value", f"{pval:.3e}", "α = 0.05", "mint")
-        with m3: card_metric("η² effect size", f"{eta:.3f}", "Variance explained", "blue")
+        with m3: card_metric("η² effect size", eta_display, eta_description, "blue")
         with m4: card_metric("Groups", str(len(summary)), "Included in test", "coral")
 
         with st.container(border=True):
