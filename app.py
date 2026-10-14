@@ -92,7 +92,7 @@ st.markdown("""<div class="hero"><div class="eyebrow">Probability & Statistics</
 # -------------------- Gender-first gate --------------------
 if st.session_state.gender_selected is None:
     st.markdown('<div style="height:14px"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="card"><div class="eyebrow">Patient</div><div class="section-title">Select sex</div><div class="section-sub">This is the first variable used in the probability calculation.</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="card"><div class="eyebrow">Patient</div><div class="section-title">Select sex</div><div class="section-sub">Please select your sex</div></div>', unsafe_allow_html=True)
     st.markdown('<div style="height:8px"></div>', unsafe_allow_html=True)
     c1,c2,c3 = st.columns([1,1,2])
     with c1:
